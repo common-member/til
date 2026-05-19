@@ -1,0 +1,58 @@
+#!/bin/bash
+set -euo pipefail
+
+TIL_DIR="$HOME/projects/til"
+AUTHOR="common-member"
+
+usage() {
+  echo "Usage: til new <slug>"
+  echo ""
+  echo "例: til new react-hooks"
+  echo "  → ~/projects/til/react-hooks.md を生成してエディタで開く"
+  exit 1
+}
+
+cmd_new() {
+  local slug="$1"
+  local file="$TIL_DIR/$slug.md"
+  local today
+  today="$(date -u +%Y-%m-%dT00:00:00.000Z)"
+
+  if [ -f "$file" ]; then
+    echo "既に存在します: $file"
+    echo "エディタで開きます..."
+    "${EDITOR:-nvim}" "$file"
+    return
+  fi
+
+  cat > "$file" <<EOF
+---
+author: $AUTHOR
+pubDatetime: $today
+title:
+tags:
+  -
+description:
+---
+
+## やったこと
+
+
+
+## 学んだこと
+
+
+EOF
+
+  echo "作成しました: $file"
+  "${EDITOR:-nvim}" "$file"
+}
+
+if [ $# -lt 2 ]; then
+  usage
+fi
+
+case "$1" in
+  new) cmd_new "$2" ;;
+  *) usage ;;
+esac
